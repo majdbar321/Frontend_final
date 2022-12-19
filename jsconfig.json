@@ -7,7 +7,12 @@
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],
+      
+        "extensions": [
+          ".vue"
+        ]
+      
     },
     "lib": [
       "esnext",
@@ -16,4 +21,5 @@
       "scripthost"
     ]
   }
+  
 }

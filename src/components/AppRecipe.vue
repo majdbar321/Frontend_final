@@ -1,258 +1,118 @@
-<template>
-  <div class="jumbotron vertical-center">
-      <div class = "container">
-          <div class = "row">
-              <div class = "col-sm-12">
-                  <h1>Recipes</h1>
-                  <hr />
-                  <!-- Allert Message -->
-        <b-alert v-if="showMessage" variant="success" show>{{
-          message
-        }}</b-alert>
-        <!-- b-alert v-if="error" variant="danger" show>{{ error }}</b-alert-->
 
-        <button
-          type="button"
-          class="btn btn-success btn-sm"
-          v-b-modal.recipe-modal
-        >
-          Create 
-        </button>
-                  <br /> <br />
-                  <table class = "table table-hover">
-                      <thead>
-                          <tr>
-                              <th scope = "col"> Recipe Name </th>
-                              <th scope = "col"> Recipe ingr </th>
-                              <th scope = "col"> Recipe inst </th>
-                              <th scope = "col"> Recipe star </th>
-                              <th scope = "col"> Recipe rate </th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr v-for= "recipe in recipes" :key = "recipe.id">
-                              <td> {{ recipe.name }} </td>
-                              <td> {{ recipe.ingr }} </td>
-                              <td> {{ recipe.inst }} </td>
-                              <td>
-                                  <b-icon 
+
+<template>
+  <div class="background">
+    
+    <div class="container" >
+      <div class="row">
+        <div class="col-sm-12">
+         
+          
+          <h1>Delicious Recipes for Any Occasion</h1>
+          <hr />
+          
+          <!-- Allert Message -->
+          <b-alert v-if="showMessage" variant="success" show>{{ message }}</b-alert>
+          
+          <!-- Create Recipe Button -->
+          <button type="button" class="btn btn-primary btn-lg p-3" v-b-modal.recipe-modal ><b-icon icon="plus"></b-icon>Create</button>
+          
+          <!-- Recipe Cards -->
+          
+          <div class="row">
+            <div class="col-sm-6" v-for="recipe in recipes" :key="recipe.id">
+              <div class="card">
+                <div class="card-body">
+                <h5 class="card-title">{{ recipe.name }}</h5>
+                <p class="card-text">Ingredients: {{ recipe.ingr }}</p>
+                <p class="card-text">Instructions: {{ recipe.inst }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <!-- Star Rating -->
+                  <div>
+                    <b-icon 
                                   v-if="recipe.star == true" icon="heart-fill">
                                   </b-icon>
                                   <b-icon v-if="(recipe.star == false)" icon="heart">
                                   </b-icon>
-                              </td>
-                                <td> 
-                                    <div>
-                                        <b-form-rating v-model= "recipe.rate" readonly variant="warning" class="mb-2"></b-form-rating>
-                                        <p class="mt-2"></p>
-                                    </div> 
-                                 </td>
-                              
-                               <td> 
-                                  <div class="btn-group" role="group">
-                                      <button
-                                      type="button"
-                                      class="btn btn-info btn-sm"
-                                      v-b-modal.edit-recipe-modal
-                                      @click="editRecipe(recipe)"
-                                      >
-                                      Edit
-                                      </button>
-                                      <button
-                                      type="button"
-                                      class="btn btn-danger btn-sm"
-                                      @click="deleteRecipe(recipe)"
-                                      >
-                                      Delete
-                                      </button>
-                                  </div>
-                              </td>
-                          </tr>
-                      </tbody>
-                  </table>
-                  <footer class = "text-center">
-                  </footer>
-              
+                  </div>
+                  <!-- Recipe Rating -->
+                  <div>
+                    <b-form-rating v-model="recipe.rate" readonly variant="warning" class="mb-2"></b-form-rating>
+                    <p class="mt-2"></p>
+                  </div>
+                </div>
+                <!-- Edit and Delete Buttons -->
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-info btn-sm" v-b-modal.edit-recipe-modal @click="editRecipe(recipe)">Edit</button>
+                  <button type="button" class="btn btn-danger btn-sm" @click="deleteRecipe(recipe)">Delete</button>
+                </div>
               </div>
-          </div>
-          <!-- Beginning of Modal for Create -->
-              <div>   <b-modal 
-              ref = "addRecipeModal"
-              id="recipe-modal"
-              title="Add Recipe"
-              hide-backdrop
-              hide-footer
-              >
-              <b-form @submit="onSubmit" class="w-100">
-              <b-form-group
-                  id="name"
-              label="Recipe Name:"
-              label-for="name"
-              description="Name of the recipe."
-              >
-              <b-form-input
-              id="name"
-              type="text"
-              v-model="createRecipeForm.name"
-              placeholder="name"
-              required
-              >
-              </b-form-input>
-              </b-form-group>
-              <b-form-group
-              id="ingr"
-              label="Recipe ingr:"
-              label-for="ingr"
-              description="ingr of the recipe."
-              >
-              <b-form-input
-              id="ingr"
-              type="text"
-              v-model="createRecipeForm.ingr"
-              placeholder="ingr"
-              required
-              ></b-form-input>
-              </b-form-group>
-              <b-form-group
-              id="inst"
-              label="Recipe inst:"
-              label-for="inst"
-              description="inst of the recipe."
-              >
-              <b-form-input
-              id="inst"
-              type="text"
-              v-model="createRecipeForm.inst"
-              placeholder="Recipe inst"
-              required
-              ></b-form-input>
-              </b-form-group>
-              <b-form-group
-              id="form-star-group"    
-              label="Recipe star:"
-              label-for="form-edit-star-input"
-              description="star this recipe"
-              >
-              <b-form-checkbox
-              id="form-star-input"
-              v-model="createRecipeForm.star"
-              switch
-              ></b-form-checkbox>
-              </b-form-group>
-              <b-form-group
-              id="rate"
-              label="Recipe rating:"
-              label-for="form-rating-input"
-              description="Rate this recipe from 1-5"
-              >
-              <b-form-rating
-              id="rate"
-              type="integer"
-              v-model="createRecipeForm.rate"
-              ></b-form-rating>
-              </b-form-group>
-              <b-button type="submit" variant="primary">Submit</b-button>
-              </b-form>
-          </b-modal>
-
-          <!-- End of Modal for Create Recipe-->
-
-          <!-- Beginning of Modal for Edit Recipe-->
-          <b-modal
-          ref = "editRecipeModal"
-          id="edit-recipe-modal"
-          title="Edit Recipe"
-          hide-backdrop
-          hide-footer
-          >
-          <b-form @submit="onSubmitUpdate" class="w-100">
-          <b-form-group
-          id="form-name-group"
-          label="name:"
-          label-for="form-name-input"
-          description="Enter the name of the recipe."
-          >
-          <b-form-input
-          id="form-name-input"
-          type="text"
-          v-model="updateRecipeForm.name"
-          placeholder="name"
+              </div>
+              </div>
+            </div>
+        
           
-          >
-          </b-form-input>
-          </b-form-group>
-          <b-form-group
-          id="form-ingr-group"
-          label="ingr:"
-          label-for="form-ingr-input"
-          description="Enter the ingr of the recipe."
-          >
-          <b-form-input
-          id="form-ingr-input"
-          type="text"
-          v-model="updateRecipeForm.ingr"
-          placeholder="ingr"
-          >
-          </b-form-input>
-          </b-form-group>
-          <b-form-group
-          id="form-inst-group"
-          label="Recipe inst:"
-          label-for="form-inst-input"
-          description="Enter the inst of the recipe."
-          >
-          <b-form-input
-
-          id="form-inst-input"
-          type="text"
-          v-model="updateRecipeForm.inst"
-          placeholder="Recipe inst"
-          >
-          </b-form-input>
-          </b-form-group>
-
-          <b-form-group
-
-          id="form-star-group"
-          label="Recipe star:"
-          label-for="form-star-input"
-          description="Let us know if you want to star this recipe"
-          >
-          <b-form-checkbox
-          id="form-star-input"
-          v-model="updateRecipeForm.star"
-          switch
-          ></b-form-checkbox>
-          </b-form-group>
-          <b-form-group
-          id="form-rating-group"
-          label="Recipe rating:"
-          label-for="form-rating-input"
-          description="Rate this recipe from 1-5"
-          >
-          <b-form-rating
-          id="form-rating-input"
-          type="integer"
-          v-model="updateRecipeForm.rate"
-          ></b-form-rating>
-          </b-form-group>
-  
-          <b-button type="submit" variant="primary">Update</b-button>
-          </b-form>
-          </b-modal>
-          <!-- End of Modal for Edit Recipe-->
-
+          <footer class="text-center">
+          </footer>
+        </div>
+      </div>
       </div>
       
-  
+      <!-- Beginning of Modal for Create -->
+      <div>  
+        <b-modal ref="addRecipeModal" id="recipe-modal" title="Add Recipe" hide-backdrop hide-footer>
+          <!-- Add Recipe Form -->
+          <b-form @submit="onSubmit" class="w-100">
+        <b-form-group id="name" label="Recipe Name:" label-for="name" description="Name of the recipe.">
+          <b-form-input id="name" type="text" v-model="createRecipeForm.name" placeholder="name" required></b-form-input>
+        </b-form-group>
+        <b-form-group id="ingr" label="Ingredients:" label-for="ingr" description="List of ingredients, separated by commas.">
+          <b-form-textarea id="ingr" v-model="createRecipeForm.ingr" placeholder="ingredients" required></b-form-textarea>
+        </b-form-group>
+        <b-form-group id="inst" label="Instructions:" label-for="inst" description="Step-by-step instructions for preparing the recipe.">
+          <b-form-textarea id="inst" v-model="createRecipeForm.inst" placeholder="instructions" required></b-form-textarea>
+        </b-form-group>  
+        <b-form-group id="star" label="Add to Favorites:" label-for="star" description="Add the recipe to your favorites list.">
+          <b-form-checkbox id="star" v-model="createRecipeForm.star"></b-form-checkbox>
+        </b-form-group>
+        <b-form-group id="rate" label="Rating:" label-for="rate" description="Rate the recipe (1 = worst, 5 = best).">
+          <b-form-rating id="rate" v-model="createRecipeForm.rate" variant="warning"></b-form-rating>
+        </b-form-group>
+        <!-- Submit Button -->
+            <b-button type="submit" variant="primary">Add Recipe</b-button>
+          </b-form>
+        </b-modal>
+      
+      
+      <!-- Beginning of Modal for Edit -->
+      <div>
+        <b-modal ref="editRecipeModal" id="edit-recipe-modal" title="Edit Recipe" hide-backdrop hide-footer>
+          <!-- Edit Recipe Form -->
+          <b-form @submit="onSubmitUpdate" class="w-100">
+            <b-form-group id="name" label="Recipe Name:" label-for="name" description="Name of the recipe.">
+              <b-form-input id="name" type="text" v-model="editRecipeForm.name" placeholder="name" required></b-form-input>
+            </b-form-group>
+            <b-form-group id="ingr" label="Ingredients:" label-for="ingr" description="List of ingredients separated by commas.">
+          <b-form-textarea id="ingr" v-model="editRecipeForm.ingr" placeholder="ingredients" required></b-form-textarea>
+        </b-form-group>
+        <b-form-group id="inst" label="Instructions:" label-for="inst" description="Step-by-step instructions for preparing the recipe.">
+          <b-form-textarea id="inst" v-model="editRecipeForm.inst" placeholder="instructions" required></b-form-textarea>
+        </b-form-group>
+        <b-form-group id="star" label="Add to Favorites:" label-for="star" description="Add the recipe to your favorites list.">
+          <b-form-checkbox id="star" v-model="editRecipeForm.star"></b-form-checkbox>
+        </b-form-group>
+        <b-form-group id="rate" label="Rating:" label-for="rate" description="Rate the recipe (1 = worst, 5 = best).">
+          <b-form-rating id="rate" v-model="editRecipeForm.rate" variant="warning"></b-form-rating>
+        </b-form-group><!-- Submit Button -->
+            <b-button type="submit" variant="primary">Edit Recipe</b-button>
+          </b-form>
+        </b-modal>
+      </div>
+    </div>
   </div>
-</div>
+  </template>
+
  
-  
-
-</template>
-
-
 <script>
   
   
@@ -272,7 +132,7 @@
                 rate: 0
             },
   
-            updateRecipeForm: {
+            editRecipeForm: {
                 name: '',
                 ingr: '',
                 inst: '',
@@ -291,7 +151,7 @@
       
         //GET Recipes
         RESTgetRecipes() {
-        const path = `${process.env.VUE_APP_ROOT_URL}/recipes`;
+        const path = `http://127.0.0.1:5000/recipes`;
         axios
             .get(path)
             .then((response) => {
@@ -312,7 +172,7 @@
   
         //POST Recipes
         RESTcreateRecipe(payload){
-            const path = `${process.env.VUE_APP_ROOT_URL}/recipe`;
+            const path = `http://127.0.0.1:5000/recipe`;
             axios
                 .post(path,payload)
                 .then((response) => {
@@ -332,7 +192,7 @@
         },
   
         RESTupdateRecipe(payload, id){
-            const path = `${process.env.VUE_APP_ROOT_URL}/recipe/${id}`;
+            const path = `http://127.0.0.1:5000/recipe/${id}`;
             axios
                 .put(path,payload)
                 .then((response) => {
@@ -353,7 +213,7 @@
   
   
         RESTdeleteRecipe(id){
-            const path = `${process.env.VUE_APP_ROOT_URL}/recipe/${id}`;
+            const path = `http://127.0.0.1:5000/recipe/${id}`;
             axios
                 .delete(path)
                 .then((response) => {
@@ -405,13 +265,13 @@
           e.preventDefault(); 
           this.$refs.editRecipeModal.hide(); 
           const payload = {
-              name: this.updateRecipeForm.name,
-              ingr: this.updateRecipeForm.ingr,
-              inst: this.updateRecipeForm.inst,
-              star: this.updateRecipeForm.star,
-              rate: this.updateRecipeForm.rate
+              name: this.editRecipeForm.name,
+              ingr: this.editRecipeForm.ingr,
+              inst: this.editRecipeForm.inst,
+              star: this.editRecipeForm.star,
+              rate: this.editRecipeForm.rate
           };
-          this.RESTupdateRecipe(payload, this.updateRecipeForm.id);
+          this.RESTupdateRecipe(payload, this.editRecipeForm.id);
           this.initForm();
       },
   
@@ -420,7 +280,7 @@
         },
   
         editRecipe(recipe) {
-            this.updateRecipeForm = recipe;
+            this.editRecipeForm = recipe;
         },
   
         
@@ -435,12 +295,59 @@
   
   </script>
 <style>
-.vertical-center {
-  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-  min-height: 100vh; /* These two lines are counted as one :-)       */
 
-  display: flex;
+    
+
+
+h1 {
+  font-family: Arial, sans-serif;
+  color: rgb(255, 246, 220);
+  justify-content: center;
   align-items: center;
 }
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.card-top{
+  size:cover;
+}
+.card {
+    background-color: #e0dabf;
+    border-radius: 6px;
+    display: inline-block;
+    width: 90%;
+  }
+  .card-title {
+    font-size: 18px;
+  }
+  .card:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    cursor: pointer;
+  }
+  .btn-primary {
+    background-color: #d4a303cc;
+  }
+  .btn-primary:hover {
+    background-color: #d9cb00;
+  }
+  .btn-group {
+    color: #9c810a;
+  }
+  .btn-group:hover {
+    color: #8f7606;
+  }
+  .btn-danger {
+    background-color: #dc3545;
+  }
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+
+
 </style>
 
