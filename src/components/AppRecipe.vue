@@ -151,7 +151,7 @@
       
         //GET Recipes
         RESTgetRecipes() {
-        const path = `http://127.0.0.1:5000/recipes`;
+        const path = `${process.env.VUE_APP_ROOT_URL}/recipes`;
         axios
             .get(path)
             .then((response) => {
@@ -172,7 +172,7 @@
   
         //POST Recipes
         RESTcreateRecipe(payload){
-            const path = `http://127.0.0.1:5000/recipe`;
+            const path = `${process.env.VUE_APP_ROOT_URL}/recipe`;
             axios
                 .post(path,payload)
                 .then((response) => {
@@ -192,7 +192,7 @@
         },
   
         RESTupdateRecipe(payload, id){
-            const path = `http://127.0.0.1:5000/recipe/${id}`;
+            const path = `${process.env.VUE_APP_ROOT_URL}/recipe/${id}`;
             axios
                 .put(path,payload)
                 .then((response) => {
@@ -213,7 +213,7 @@
   
   
         RESTdeleteRecipe(id){
-            const path = `http://127.0.0.1:5000/recipe/${id}`;
+            const path = `${process.env.VUE_APP_ROOT_URL}/recipe/${id}`;
             axios
                 .delete(path)
                 .then((response) => {
